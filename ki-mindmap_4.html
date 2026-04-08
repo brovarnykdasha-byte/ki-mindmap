@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Mindmap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --center: #e8ff47;
+    --c1: #ff6b6b;
+    --c2: #4ecdc4;
+    --c3: #a78bfa;
+    --c4: #fb923c;
+    --c5: #34d399;
+    --c6: #f472b6;
+    --c7: #fbbf24;
+    --c8: #38bdf8;
+    --c9: #86efac;
+    --c10: #e879f9;
+    --c11: #f97316;
+    --c12: #a3e635;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Syne', sans-serif;
+    color: #f0f0f0;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 800;
+    padding: 2rem 1rem 0.4rem;
+    letter-spacing: -0.02em;
+    color: var(--center);
+  }
+
+  p.sub {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.3);
+    padding-bottom: 1.8rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.4rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .cat {
+    border-radius: 16px;
+    padding: 1.4rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.025);
+    transition: transform 0.2s;
+    opacity: 0;
+    animation: fadeUp 0.5s forwards;
+  }
+  .cat:hover { transform: translateY(-3px); }
+
+  .cat:nth-child(1)  { animation-delay: 0.04s; border-top: 2px solid var(--c1); }
+  .cat:nth-child(2)  { animation-delay: 0.08s; border-top: 2px solid var(--c2); }
+  .cat:nth-child(3)  { animation-delay: 0.12s; border-top: 2px solid var(--c3); }
+  .cat:nth-child(4)  { animation-delay: 0.16s; border-top: 2px solid var(--c4); }
+  .cat:nth-child(5)  { animation-delay: 0.20s; border-top: 2px solid var(--c5); }
+  .cat:nth-child(6)  { animation-delay: 0.24s; border-top: 2px solid var(--c6); }
+  .cat:nth-child(7)  { animation-delay: 0.28s; border-top: 2px solid var(--c7); }
+  .cat:nth-child(8)  { animation-delay: 0.32s; border-top: 2px solid var(--c8); }
+  .cat:nth-child(9)  { animation-delay: 0.36s; border-top: 2px solid var(--c9); }
+  .cat:nth-child(10) { animation-delay: 0.40s; border-top: 2px solid var(--c10); }
+  .cat:nth-child(11) { animation-delay: 0.44s; border-top: 2px solid var(--c11); }
+  .cat:nth-child(12) { animation-delay: 0.48s; border-top: 2px solid var(--c12); }
+
+  .cat-title {
+    font-size: 0.68rem;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .cat:nth-child(1)  .dot { background: var(--c1); }
+  .cat:nth-child(2)  .dot { background: var(--c2); }
+  .cat:nth-child(3)  .dot { background: var(--c3); }
+  .cat:nth-child(4)  .dot { background: var(--c4); }
+  .cat:nth-child(5)  .dot { background: var(--c5); }
+  .cat:nth-child(6)  .dot { background: var(--c6); }
+  .cat:nth-child(7)  .dot { background: var(--c7); }
+  .cat:nth-child(8)  .dot { background: var(--c8); }
+  .cat:nth-child(9)  .dot { background: var(--c9); }
+  .cat:nth-child(10) .dot { background: var(--c10); }
+  .cat:nth-child(11) .dot { background: var(--c11); }
+  .cat:nth-child(12) .dot { background: var(--c12); }
+
+  .tools { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tw { display: flex; flex-direction: column; align-items: flex-start; }
+
+  
+
+  
+
+  a.tool {
+    display: inline-block;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #0a0a0f;
+    transition: all 0.16s ease;
+    border: 2px solid transparent;
+  }
+  a.tool::after { content: ' ↗'; font-size: 0.65rem; opacity: 0; transition: opacity 0.15s; }
+  a.tool:hover::after { opacity: 1; }
+  a.tool:hover { filter: brightness(1.1); transform: scale(1.05); color: #fff; border-color: rgba(255,255,255,0.35); }
+  a.tool:active { transform: scale(0.97); }
+
+  .cat:nth-child(1)  a.tool { background: var(--c1); }
+  .cat:nth-child(2)  a.tool { background: var(--c2); }
+  .cat:nth-child(3)  a.tool { background: var(--c3); }
+  .cat:nth-child(4)  a.tool { background: var(--c4); }
+  .cat:nth-child(5)  a.tool { background: var(--c5); }
+  .cat:nth-child(6)  a.tool { background: var(--c6); }
+  .cat:nth-child(7)  a.tool { background: var(--c7); }
+  .cat:nth-child(8)  a.tool { background: var(--c8); }
+  .cat:nth-child(9)  a.tool { background: var(--c9); }
+  .cat:nth-child(10) a.tool { background: var(--c10); }
+  .cat:nth-child(11) a.tool { background: var(--c11); }
+  .cat:nth-child(12) a.tool { background: var(--c12); }
+
+  .td {
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    color: rgba(255,255,255,0.3);
+    margin-top: 0.2rem;
+  }
+
+  footer {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.18);
+    padding: 1rem;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<h1>Alles gute zum Geburtstag, Hamster</h1>
+<p class="sub">Klick auf ein Tool → öffnet direkt die Website</p>
+
+
+
+<div class="grid">
+
+  <!-- 1. CHATTEN & FRAGEN STELLEN -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>💬 Chatten &amp; Fragen stellen</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://claude.ai" target="_blank">Claude</a>
+          <span class="td">Anthropic · Texte, Code, tiefe Analyse</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://chatgpt.com" target="_blank">ChatGPT</a>
+          <span class="td">OpenAI · Universeller Assistent</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://gemini.google.com" target="_blank">Gemini</a>
+          <span class="td">Google · Gmail & Docs Integration</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://copilot.microsoft.com" target="_blank">Copilot</a>
+          <span class="td">Microsoft · In Windows integriert</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.meta.ai" target="_blank">Meta AI</a>
+          <span class="td">Meta · WhatsApp & Instagram</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.kimi.com/en" target="_blank">Kimi K2</a>
+          <span class="td">Moonshot AI · Starker Open-Source Agent</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.genspark.ai" target="_blank">Genspark</a>
+          <span class="td">Super Agent · 9 KI-Modelle kombiniert</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://poe.com" target="_blank">Poe</a>
+          <span class="td">Quora · Alle KI-Modelle in einer App</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 2. SUCHEN & RECHERCHIEREN -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>🔍 Suchen &amp; Recherchieren</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://www.perplexity.ai" target="_blank">Perplexity</a>
+          <span class="td">KI-Suche mit verifizierten Quellen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.you.com" target="_blank">You.com</a>
+          <span class="td">KI-Suchmaschine mit Modus-Wahl</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://iask.ai" target="_blank">iAsk.ai</a>
+          <span class="td">Kostenlose KI-Suche · kein Login nötig</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://consensus.app" target="_blank">Consensus</a>
+          <span class="td">Wissenschaftliche Paper durchsuchen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://elicit.com" target="_blank">Elicit</a>
+          <span class="td">Akademische Recherche & Auswertung</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.semanticscholar.org" target="_blank">Semantic Scholar</a>
+          <span class="td">KI-Suche · Millionen wissenschaftlicher Paper</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
+          <span class="td">Kostenlos · stark in Analyse & Recherche</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.giz.ai" target="_blank">Giz.ai</a>
+          <span class="td">YouTube & Webseiten zusammenfassen · kein Login</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 3. TEXTE SCHREIBEN & VERBESSERN -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>✍️ Texte schreiben &amp; verbessern</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://www.grammarly.com" target="_blank">Grammarly</a>
+          <span class="td">Grammatik, Stil & Ton korrigieren</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.deepl.com" target="_blank">DeepL</a>
+          <span class="td">Beste KI-Übersetzung weltweit</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://quillbot.com" target="_blank">QuillBot</a>
+          <span class="td">Paraphrasieren & Umschreiben</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.wordtune.com" target="_blank">Wordtune</a>
+          <span class="td">Sätze schnell umformulieren</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://hemingwayapp.com" target="_blank">Hemingway</a>
+          <span class="td">Lesbarkeit & Klarheit verbessern</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://typefully.com" target="_blank">Typefully</a>
+          <span class="td">KI-Hilfe für Social Media Posts</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 4. BILDER GENERIEREN & BEARBEITEN -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>🎨 Bilder generieren &amp; bearbeiten</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://www.bing.com/images/create" target="_blank">Bing Image Creator</a>
+          <span class="td">DALL·E 3 · komplett kostenlos</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://ideogram.ai" target="_blank">Ideogram</a>
+          <span class="td">Bilder mit lesbarem Text</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.adobe.com/de/products/firefly.html" target="_blank">Adobe Firefly</a>
+          <span class="td">25 Credits/Monat gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://app.leonardo.ai" target="_blank">Leonardo AI</a>
+          <span class="td">150 Credits/Tag gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://playgroundai.com" target="_blank">Playground AI</a>
+          <span class="td">50 Bilder/Tag gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.remove.bg" target="_blank">Remove.bg</a>
+          <span class="td">Hintergrund automatisch entfernen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://cleanup.pictures" target="_blank">Cleanup.Pictures</a>
+          <span class="td">Objekte aus Fotos löschen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://napkin.ai" target="_blank">Napkin AI</a>
+          <span class="td">Text → Diagramme & Visuals</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.krea.ai" target="_blank">Krea AI</a>
+          <span class="td">Echtzeit-Bildgenerierung · 50/Tag gratis</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 5. AUDIO & VIDEO -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>🎬 Audio &amp; Video erstellen</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://suno.com" target="_blank">Suno</a>
+          <span class="td">Musik aus Text generieren</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://elevenlabs.io" target="_blank">ElevenLabs</a>
+          <span class="td">Text-to-Speech & Stimmen klonen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.capcut.com" target="_blank">CapCut</a>
+          <span class="td">KI-Videoeditor mit Auto-Cut</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://clipchamp.com" target="_blank">Clipchamp</a>
+          <span class="td">Microsoft · Videoerstellung</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.descript.com" target="_blank">Descript</a>
+          <span class="td">Podcast & Video per Text bearbeiten</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.snipd.com" target="_blank">Snipd</a>
+          <span class="td">Podcast-Highlights mit KI speichern</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 6. PRÄSENTATIONEN -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>📊 Präsentationen erstellen</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://gamma.app" target="_blank">Gamma</a>
+          <span class="td">KI erstellt komplette Slides aus Text</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.beautiful.ai" target="_blank">Beautiful.ai</a>
+          <span class="td">Automatisches Design & Layout</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.canva.com/presentations/" target="_blank">Canva AI</a>
+          <span class="td">Magic Design · 10x gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://slidesgo.com" target="_blank">Slidesgo AI</a>
+          <span class="td">3 Präsentationen/Monat gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.presentations.ai" target="_blank">Presentations.ai</a>
+          <span class="td">Prompt → fertige Präsentation</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://magicslides.app" target="_blank">MagicSlides</a>
+          <span class="td">Google Slides Add-on · 3 Decks gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.decktopus.com" target="_blank">Decktopus AI</a>
+          <span class="td">KI-Deck aus Thema + Gliederung</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.sendsteps.com/en/ai-presentation-maker/" target="_blank">Sendsteps AI</a>
+          <span class="td">Interaktive Slides mit Quizzen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://notegpt.io/nano-banana-pro-slides" target="_blank">NoteGPT Nano Banana</a>
+          <span class="td">Nano Banana Pro · kein Account nötig</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://pptmaker.io" target="_blank">PPTMaker.io</a>
+          <span class="td">100% gratis · kein Sign-up · sofort starten</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.easemate.ai" target="_blank">EaseMate AI</a>
+          <span class="td">Nano Banana · kein Login · keine Wasserzeichen</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 8. MEETINGS & PRODUKTIVITÄT -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>⚙️ Meetings &amp; Produktivität</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://notebooklm.google.com" target="_blank">NotebookLM</a>
+          <span class="td">Google · Dokumente analysieren & chatten</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://otter.ai" target="_blank">Otter.ai</a>
+          <span class="td">Meetings live transkribieren</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://tldv.io" target="_blank">tl;dv</a>
+          <span class="td">Meeting-Aufnahmen zusammenfassen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.granola.so" target="_blank">Granola</a>
+          <span class="td">KI-Notizen aus Meetings (macOS)</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.tactiq.io" target="_blank">Tactiq</a>
+          <span class="td">Live-Transkript in Google Meet & Zoom</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://reclaim.ai" target="_blank">Reclaim AI</a>
+          <span class="td">KI plant Kalender automatisch</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.notion.so/product/ai" target="_blank">Notion AI</a>
+          <span class="td">Notizen & Zusammenfassungen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://n8n.io" target="_blank">n8n</a>
+          <span class="td">KI-Automatisierung (Open Source)</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 9. LERNEN & BILDUNG -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>📚 Lernen &amp; Bildung</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://www.khanacademy.org/khan-labs" target="_blank">Khanmigo</a>
+          <span class="td">Khan Academy · 100% kostenloser KI-Tutor</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://apps.ankiweb.net" target="_blank">Anki</a>
+          <span class="td">Open Source · Spaced Repetition Karten</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://lens.google" target="_blank">Google Lens</a>
+          <span class="td">Google · Hausaufgaben per Foto lösen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.duolingo.com" target="_blank">Duolingo</a>
+          <span class="td">KI-Sprachenlernen · komplett gratis</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.brainly.com" target="_blank">Brainly</a>
+          <span class="td">KI-Lernhilfe für alle Schulfächer</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.wolframalpha.com" target="_blank">Wolfram Alpha</a>
+          <span class="td">Mathe & Wissenschaft schrittweise lösen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.chatpdf.com" target="_blank">ChatPDF</a>
+          <span class="td">PDFs mit KI befragen & zusammenfassen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.penseum.com" target="_blank">Penseum</a>
+          <span class="td">PDFs & Videos → Flashcards & Quizze</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.magicschool.ai" target="_blank">MagicSchool AI</a>
+          <span class="td">KI-Tutor · Lernpläne & Erklärungen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://tutorai.me" target="_blank">Tutor AI</a>
+          <span class="td">Thema wählen → Lektionen mit Quiz</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://notebooklm.google.com" target="_blank">NotebookLM</a>
+          <span class="td">Google · Lernmaterial analysieren & chatten</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 10. HIDDEN GEMS -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>💎 Hidden Gems – Unterschätzt &amp; stark</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://goblin.tools" target="_blank">Goblin.tools</a>
+          <span class="td">Aufgaben in kleine Schritte aufteilen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://mymap.ai" target="_blank">MyMap.ai</a>
+          <span class="td">Ideen automatisch als Mindmap</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.wispr.ai" target="_blank">Wispr Flow</a>
+          <span class="td">Sprache → sauberer Text überall</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.merlin.foyer.work" target="_blank">Merlin AI</a>
+          <span class="td">KI direkt in jedem Browser-Tab</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://manus.im" target="_blank">Manus AI</a>
+          <span class="td">Multi-Agent · erledigt Aufgaben autonom</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://chathub.gg" target="_blank">ChatHub</a>
+          <span class="td">Mehrere KI-Modelle gleichzeitig vergleichen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.warp.dev" target="_blank">Warp AI</a>
+          <span class="td">KI-Terminal für Entwickler</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://monica.im" target="_blank">Monica AI</a>
+          <span class="td">KI-Assistent als Browser-Extension</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 12. VIDEO & AUDIO SUMMARY -->
+  <div class="cat">
+    <div class="cat-title"><span class="dot"></span>⏱️ Video &amp; Audio zusammenfassen</div>
+    <div class="tools">
+      <div class="tw">
+          <a class="tool" href="https://notegpt.io/youtube-video-summarizer" target="_blank">NoteGPT Summarizer</a>
+          <span class="td">Bis 150 Min. · kein Account · 40+ Sprachen</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://decopy.ai/youtube-video-summarizer" target="_blank">Decopy.ai</a>
+          <span class="td">50 Videos/Tag gratis · kein Login nötig</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://docsbot.ai/tools/ai-youtube-summarizer" target="_blank">DocsBot</a>
+          <span class="td">100% kostenlos · kein Login · sofort</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://notebooklm.google.com" target="_blank">NotebookLM</a>
+          <span class="td">Google · Audio & PDFs analysieren & chatten</span>
+        </div>
+      <div class="tw">
+          <a class="tool" href="https://www.giz.ai/ai-youtube-summary" target="_blank">Giz.ai</a>
+          <span class="td">YouTube mit ChatGPT, Claude oder Gemini</span>
+        </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>hab spass</footer>
+
+
+</body>
+</html>
